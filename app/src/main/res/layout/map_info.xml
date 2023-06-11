@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map_info"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="15dp"
+    tools:context=".MapinfoActivity"
+    android:background="@color/white"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            app:srcCompat="@drawable/box1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:visibility="visible"
+            app:srcCompat="@drawable/all" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginStart="20dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/map_info_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="화장실명"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/map_info_name2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="화장실명"
+            android:textSize="16dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="19dp"
+        android:layout_marginStart="20dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/map_info_addr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="주소"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/map_info_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="화장실명"
+            android:textSize="14dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginStart="20dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/map_info_man"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="남성용"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+    <!--여기까지는 리니어-->
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginStart="20dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/map_info_manso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      소변기 수:"
+            android:textSize="14dp" />
+        <TextView
+            android:id="@+id/map_info_manso1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="변수"
+            android:textSize="14dp" />
+    </TableRow>
+
+    <TableRow
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:layout_marginStart="20dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/map_info_mandae"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="      대변기 수:"
+        android:textSize="14dp" />
+    <TextView
+        android:id="@+id/map_info_mandae2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="수"
+        android:textSize="14dp" />
+    </TableRow>
+
+    <TableRow
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:layout_marginStart="20dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/map_info_man2so"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="      장애인용 소변기 수:"
+        android:textSize="14dp" />
+    <TextView
+        android:id="@+id/map_info_man2so2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="수"
+        android:textSize="14dp" />
+    </TableRow>
+
+    <TableRow
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:layout_marginStart="20dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/map_info_man2dae"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="      장애인용 대변기 수:"
+        android:textSize="14dp" />
+    <TextView
+        android:id="@+id/map_info_man2dae2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="수"
+        android:textSize="14dp" />
+    </TableRow>
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="6dp"
+    android:layout_marginStart="20dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/map_info_wo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="여성용"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+    </LinearLayout>
+
+    <TableRow
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/map_info_woman"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="      대변기 수:"
+        android:textSize="14dp" />
+    <TextView
+        android:id="@+id/map_info_woman22"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="수"
+        android:textSize="14dp" />
+    </TableRow>
+
+    <TableRow
+    android:layout_width="match_parent"
+    android:layout_height="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_weight="1"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/map_info_woman2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="      장애인용 대변기 수:"
+        android:textSize="14dp" />
+    <TextView
+        android:id="@+id/map_info_woman23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="수"
+        android:textSize="14dp" />
+    </TableRow>
+
+        <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="돌아가기"
+        tools:context=".MainActivity"/>
+
+    </LinearLayout>

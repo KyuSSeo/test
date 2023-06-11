@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">화장실 정보찾기</string>
+    <string name="login_01">로그인</string>
+    <string name="login_02">아이디</string>
+    <string name="login_03">비밀번호</string>
+    <string name="Accept_join">회원가입</string>
+    <string name="Accept_login">로그인</string>
+    <string name="search_text">검색</string>
+    <string name="title_piz">제목을 입력하세요.</string>
+    <string name="sosinfo_piz">문제가 되는 내용을 입력하세요.</string>
+    <string name="send_sos">보내기</string>
+    <string name="report">신고 및 문의</string>
+    <string name="import_img">첨부할 파일 선택</string>
+</resources>
