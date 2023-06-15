@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <EditText
+            <TextView
                 android:id="@+id/import_img"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
@@ -54,11 +54,11 @@
                 android:textColorHint="#85b3ff" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/import_button"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_margin="16dp"
-                android:text="첨부" />
+                android:text="파일 첨부" />
 
         </LinearLayout>
 

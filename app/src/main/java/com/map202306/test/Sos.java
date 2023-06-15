@@ -1,53 +1,192 @@
 package com.map202306.test;
 
-
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
+import android.net.Uri;
+import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import android.util.Log;
 
 public class Sos extends AppCompatActivity {
-
+    private static final int PICK_FILE_REQUEST_CODE = 100;
+    private Button importButton;
     private EditText editTextTitle;
     private EditText editTextContent;
     private Button buttonSend;
-    private com.google.firebase.database.DatabaseReference databaseRef;
+    private DatabaseReference databaseRef;
+    private TextView importImgTextView;
+    private StorageReference storageRef;
+
+    private static final String TAG = "LogUtil";
+    private static final String LOG_DIR = "MyAppLogs";
+    private static final String LOG_FILE_NAME = "log.txt";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.send_sos);
-
+        LogUtil.writeLog("오류 메시지", this);
         databaseRef = FirebaseDatabase.getInstance().getReference("reports");
-
+        storageRef = FirebaseStorage.getInstance().getReference();
         editTextTitle = findViewById(R.id.editTextTitle);
         editTextContent = findViewById(R.id.editTextContent);
         buttonSend = findViewById(R.id.send_Button);
-
+        importButton = findViewById(R.id.import_button);
+        importImgTextView = findViewById(R.id.import_img);
+        importButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFilePicker();
+            }
+        });
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String title = editTextTitle.getText().toString().trim();
                 String content = editTextContent.getText().toString().trim();
-
                 String reportId = databaseRef.push().getKey();
                 Report report = new Report(reportId, title, content);
                 databaseRef.child(reportId).setValue(report);
-
                 Toast.makeText(Sos.this, "문제가 신고되었습니다.", Toast.LENGTH_SHORT).show();
-
+                LogUtil.writeLog("문제가 신고되었습니다.", Sos.this); // 로그를 파일에 기록
                 finish();
             }
         });
     }
 
-    private class DatabaseReference {
+    private void openFilePicker() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*"); // 모든 파일 유형을 선택할 수 있도록 설정합니다.
+        startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri fileUri = data.getData();
+                String fileName = getFileName(fileUri);
+                importImgTextView.setText(fileName);
+                uploadFile(fileUri);
+            }
+        }
+    }
+
+    private void uploadFile(Uri fileUri) {
+        if (fileUri != null) {
+            StorageReference fileRef = storageRef.child("reports/" + fileUri.getLastPathSegment());
+            UploadTask uploadTask = fileRef.putFile(fileUri);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // 파일 업로드 성공
+                    // 업로드된 파일에 대한 다운로드 URL을 가져오기
+                    fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri downloadUri) {
+                            // 다운로드 URL을 사용하여 필요한 작업을 수행하세요.
+                            String downloadUrl = downloadUri.toString();
+                            // 파일 URL을 데이터베이스에 저장하거나 추가적인 처리를 수행할 수 있습니다.
+                            String reportId = databaseRef.push().getKey();
+                            databaseRef.child(reportId).child("fileUrl").setValue(downloadUrl);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // 파일 다운로드 URL을 가져오는 중에 오류가 발생한 경우 처리할 작업
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // 파일 업로드 중에 오류가 발생한 경우 처리할 작업
+                }
+            });
+        }
+    }
+
+    private String getFileName(Uri fileUri) {
+        String fileName = null;
+        if (fileUri != null) {
+            fileName = fileUri.getLastPathSegment();
+        }
+        return fileName;
+    }
+
+    public static class LogUtil {
+        private static final String TAG = "LogUtil";
+        private static final String LOG_DIR = "logs";
+        private static final String LOG_FILE_NAME = "log.txt";
+
+        public static void writeLog(String message, Context context) {
+            File logFile = getLogFile(context);
+
+            if (logFile != null) {
+                try {
+                    FileWriter fileWriter = new FileWriter(logFile, true);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    String logMessage = dateFormat.format(new Date()) + " - " + message + "\n";
+                    fileWriter.append(logMessage);
+                    fileWriter.flush();
+                    fileWriter.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Error writing log file: ", e);
+                }
+            } else {
+                Log.e(TAG, "Log file is null");
+            }
+        }
+
+        private static File getLogFile(Context context) {
+            File logDir = new File(context.getExternalFilesDir(null), LOG_DIR);
+            if (!logDir.exists()) {
+                if (!logDir.mkdirs()) {
+                    Log.e(TAG, "Error creating log directory");
+                    return null;
+                }
+            }
+
+            File logFile = new File(logDir, LOG_FILE_NAME);
+
+            if (!logFile.exists()) {
+                try {
+                    if (!logFile.createNewFile()) {
+                        Log.e(TAG, "Error creating log file");
+                        return null;
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Error creating log file: ", e);
+                    return null;
+                }
+            }
+
+            return logFile;
+        }
     }
 }
-
