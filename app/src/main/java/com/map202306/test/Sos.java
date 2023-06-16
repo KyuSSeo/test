@@ -96,7 +96,6 @@ public class Sos extends AppCompatActivity {
             }
         }
     }
-
     private void uploadFiles(Uri[] fileUris) {
         for (Uri fileUri : fileUris) {
             if (fileUri != null) {
