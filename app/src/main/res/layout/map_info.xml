@@ -236,11 +236,16 @@
         android:textSize="14dp" />
     </TableRow>
 
-        <Button
+    <Button
+        android:id="@+id/btn_destination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="길찾기"
+        tools:context=".MainActivity"/>
+    <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="돌아가기"
         tools:context=".MainActivity"/>
-
-    </LinearLayout>
+</LinearLayout>

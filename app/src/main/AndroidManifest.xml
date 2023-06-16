@@ -34,6 +34,9 @@
             android:name=".MapinfoActivity"
             android:theme="@style/AppTheme.Custom"/>
         <activity
+            android:name=".Dst"
+            android:theme="@style/AppTheme.Custom"/>
+        <activity
             android:name=".Sos"
             android:exported="true" />
     </application>

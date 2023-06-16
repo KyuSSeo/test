@@ -141,10 +141,13 @@
 
     <ImageButton
         android:id="@+id/btn_sos"
-        android:background="@null"
         android:layout_width="52dp"
         android:layout_height="52dp"
-        android:layout_margin="12dp"
-        android:src="@drawable/sos_fix"
-        android:scaleType="fitXY" />
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/sos_fix" />
 </RelativeLayout>

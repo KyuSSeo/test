@@ -71,7 +71,6 @@ public class Sos extends AppCompatActivity {
                 Report report = new Report(reportId, title, content);
                 databaseRef.child(reportId).setValue(report);
                 Toast.makeText(Sos.this, "문제가 신고되었습니다.", Toast.LENGTH_SHORT).show();
-                LogUtil.writeLog("문제가 신고되었습니다.", Sos.this); // 로그를 파일에 기록
                 finish();
             }
         });
@@ -79,7 +78,7 @@ public class Sos extends AppCompatActivity {
 
     private void openFilePicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*"); // 모든 파일 유형을 선택할 수 있도록 설정합니다.
+        intent.setType("*/*"); // 모든 파일 유형을 선택할 수 있도록 설정
         startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
     }
 
@@ -92,42 +91,44 @@ public class Sos extends AppCompatActivity {
                 Uri fileUri = data.getData();
                 String fileName = getFileName(fileUri);
                 importImgTextView.setText(fileName);
-                uploadFile(fileUri);
+                Uri logFileUri = getLogFileUri(); // 로그 파일의 URI를 가져옵니다.
+                uploadFiles(new Uri[]{fileUri, logFileUri}); // 파일 URI 배열을 전달하여 업로드합니다.
             }
         }
     }
 
-    private void uploadFile(Uri fileUri) {
-        if (fileUri != null) {
-            StorageReference fileRef = storageRef.child("reports/" + fileUri.getLastPathSegment());
-            UploadTask uploadTask = fileRef.putFile(fileUri);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // 파일 업로드 성공
-                    // 업로드된 파일에 대한 다운로드 URL을 가져오기
-                    fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri downloadUri) {
-                            // 다운로드 URL을 사용하여 필요한 작업을 수행하세요.
-                            String downloadUrl = downloadUri.toString();
-                            // 파일 URL을 데이터베이스에 저장하거나 추가적인 처리를 수행할 수 있습니다.
-                            String reportId = databaseRef.push().getKey();
-                            databaseRef.child(reportId).child("fileUrl").setValue(downloadUrl);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // 파일 다운로드 URL을 가져오는 중에 오류가 발생한 경우 처리할 작업
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // 파일 업로드 중에 오류가 발생한 경우 처리할 작업
-                }
-            });
+    private void uploadFiles(Uri[] fileUris) {
+        for (Uri fileUri : fileUris) {
+            if (fileUri != null) {
+                StorageReference fileRef = storageRef.child("reports/" + fileUri.getLastPathSegment());
+                UploadTask uploadTask = fileRef.putFile(fileUri);
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // 파일 업로드 성공
+                        fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri downloadUri) {
+                                LogUtil.writeLog("", Sos.this); // 로그를 파일에 기록
+                                String downloadUrl = downloadUri.toString();
+                                // 파일 URL을 데이터베이스에 저장하거나 추가적인 처리
+                                String reportId = databaseRef.push().getKey();
+                                databaseRef.child(reportId).child("fileUrl").setValue(downloadUrl);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // 파일 다운로드 URL을 가져오는 중에 오류가 발생한 경우
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // 파일 업로드 중에 오류가 발생한 경우
+                    }
+                });
+            }
         }
     }
 
@@ -137,6 +138,14 @@ public class Sos extends AppCompatActivity {
             fileName = fileUri.getLastPathSegment();
         }
         return fileName;
+    }
+
+    private Uri getLogFileUri() {
+        File logFile = LogUtil.getLogFile(this);
+        if (logFile != null) {
+            return Uri.fromFile(logFile);
+        }
+        return null;
     }
 
     public static class LogUtil {
