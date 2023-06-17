@@ -2,7 +2,6 @@ package com.map202306.test;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.net.Uri;
 import android.content.Intent;
@@ -19,6 +18,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -65,21 +65,17 @@ public class Sos extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String title = editTextTitle.getText().toString().trim();
                 String content = editTextContent.getText().toString().trim();
                 String reportId = databaseRef.push().getKey();
-
                 if (title.isEmpty()) {
                     Toast.makeText(Sos.this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 if (content.isEmpty()) {
                     Toast.makeText(Sos.this, "내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 Report report = new Report(reportId, title, content);
                 databaseRef.child(reportId).setValue(report);
                 Toast.makeText(Sos.this, "문제가 신고되었습니다.", Toast.LENGTH_SHORT).show();
@@ -87,7 +83,6 @@ public class Sos extends AppCompatActivity {
             }
         });
     }
-
     private void openFilePicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*"); // 모든 파일 유형을 선택할 수 있도록 설정
@@ -102,9 +97,9 @@ public class Sos extends AppCompatActivity {
             if (data != null) {
                 Uri fileUri = data.getData();
                 String fileName = getFileName(fileUri);
-                importImgTextView.setText(fileName);       //업로드 할 파일의 이름으로 텍스트 뷰 내용을 바꿉니다.
-                Uri logFileUri = getLogFileUri(); // 로그 파일의 URI를 가져옵니다.
-                uploadFiles(new Uri[]{fileUri, logFileUri}); // 파일 URI 배열을 전달하여 업로드합니다.
+                importImgTextView.setText(fileName);       //업로드 할 파일의 이름으로 텍스트 뷰 내용 변경
+                Uri logFileUri = getLogFileUri(); // 로그 파일의 URI
+                uploadFiles(new Uri[]{fileUri, logFileUri}); // 파일 URI 배열을 전달하여 업로드
             }
         }
     }
@@ -125,7 +120,7 @@ public class Sos extends AppCompatActivity {
                                 String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
                                 String fileName = timestamp + "\"yyyyMMdd_HHmmss\"log.txt";
                                 StorageReference fileRef = storageRef.child("reports/" + fileName);
-                                // 파일 URL을 데이터베이스에 저장하거나 추가적인 처리
+                                // 파일 URL을 데이터베이스에 저장하
                                 String reportId = databaseRef.push().getKey();
                                 databaseRef.child(reportId).child("fileUrl").setValue(downloadUrl);
                             }
@@ -142,6 +137,15 @@ public class Sos extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // 파일 업로드 중에 오류가 발생한 경우
+                        if (e instanceof StorageException) {
+                            StorageException storageException = (StorageException) e;
+                            int errorCode = storageException.getErrorCode();
+                            if (errorCode == StorageException.ERROR_QUOTA_EXCEEDED) {
+                                Toast.makeText(Sos.this, "Firebase Storage 일일 할당량을 초과했습니다.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+
                         Toast.makeText(Sos.this, "파일 업로드 실패.", Toast.LENGTH_SHORT).show();
                         finish();
                     }
@@ -165,7 +169,7 @@ public class Sos extends AppCompatActivity {
         }
         return null;
     }
-
+    //로그 퍼일의 생성 부분
     public static class LogUtil {
         private static final String TAG = "LogUtil";
         private static final String LOG_DIR = "logs";

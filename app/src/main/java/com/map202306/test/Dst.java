@@ -20,8 +20,8 @@ public class Dst extends Activity {
         tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, startPoint, endPoint, new TMapData.FindPathDataListenerCallback() {
             @Override
             public void onFindPathData(TMapPolyLine path) {
-                // 경로 탐색 결과를 받았을 때 처리하는 로직 작성
-                // 경로를 지도에 추가하여 표시하거나, 다른 작업을 수행할 수 있습니다.
+                // 경로 탐색 결과를 받았을 때 처리하는 로직
+                // 경로를 지도에 추가하여 표시하거나, 다른 작업을 수행
 
                 // 경로를 지도에 추가하여 표시하는 예시
                 tMapView.addTMapPath(path);
