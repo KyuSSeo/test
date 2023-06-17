@@ -90,7 +90,7 @@ public class Sos extends AppCompatActivity {
             if (data != null) {
                 Uri fileUri = data.getData();
                 String fileName = getFileName(fileUri);
-                importImgTextView.setText(fileName);
+                importImgTextView.setText(fileName);       //업로드 할 파일의 이름으로 텍스트 뷰 내용을 바꿉니다.
                 Uri logFileUri = getLogFileUri(); // 로그 파일의 URI를 가져옵니다.
                 uploadFiles(new Uri[]{fileUri, logFileUri}); // 파일 URI 배열을 전달하여 업로드합니다.
             }
@@ -110,6 +110,9 @@ public class Sos extends AppCompatActivity {
                             public void onSuccess(Uri downloadUri) {
                                 LogUtil.writeLog("", Sos.this); // 로그를 파일에 기록
                                 String downloadUrl = downloadUri.toString();
+                                String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                                String fileName = timestamp + "\"yyyyMMdd_HHmmss\"log.txt";
+                                StorageReference fileRef = storageRef.child("reports/" + fileName);
                                 // 파일 URL을 데이터베이스에 저장하거나 추가적인 처리
                                 String reportId = databaseRef.push().getKey();
                                 databaseRef.child(reportId).child("fileUrl").setValue(downloadUrl);
@@ -118,6 +121,8 @@ public class Sos extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // 파일 다운로드 URL을 가져오는 중에 오류가 발생한 경우
+                                Toast.makeText(Sos.this, "파일 다운로드 URL 가져오기 실패.", Toast.LENGTH_SHORT).show();
+                                finish();
                             }
                         });
                     }
@@ -125,6 +130,8 @@ public class Sos extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // 파일 업로드 중에 오류가 발생한 경우
+                        Toast.makeText(Sos.this, "파일 업로드 실패.", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 });
             }
