@@ -42,7 +42,7 @@ public class Sos extends AppCompatActivity {
 
     private static final String TAG = "LogUtil";
     private static final String LOG_DIR = "MyAppLogs";
-    private static final String LOG_FILE_NAME = "log.txt";
+    private static final String LOG_FILE_NAME = "yyyyMMdd_HHmmss" + "log.txt";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +65,21 @@ public class Sos extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String title = editTextTitle.getText().toString().trim();
                 String content = editTextContent.getText().toString().trim();
                 String reportId = databaseRef.push().getKey();
+
+                if (title.isEmpty()) {
+                    Toast.makeText(Sos.this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (content.isEmpty()) {
+                    Toast.makeText(Sos.this, "내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Report report = new Report(reportId, title, content);
                 databaseRef.child(reportId).setValue(report);
                 Toast.makeText(Sos.this, "문제가 신고되었습니다.", Toast.LENGTH_SHORT).show();
@@ -157,8 +169,7 @@ public class Sos extends AppCompatActivity {
     public static class LogUtil {
         private static final String TAG = "LogUtil";
         private static final String LOG_DIR = "logs";
-        private static final String LOG_FILE_NAME = "log.txt";
-
+        private static final String LOG_FILE_NAME = "yyyyMMdd_HHmmss" + "log.txt";
         public static void writeLog(String message, Context context) {
             File logFile = getLogFile(context);
 
