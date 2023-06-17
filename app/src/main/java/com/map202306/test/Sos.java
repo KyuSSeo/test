@@ -42,8 +42,7 @@ public class Sos extends AppCompatActivity {
 
     private static final String TAG = "LogUtil";
     private static final String LOG_DIR = "MyAppLogs";
-    private static final String LOG_FILE_NAME = "yyyyMMdd_HHmmss" + "log.txt";
-
+    private static final String LOG_FILE_NAME = "log.txt";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +105,13 @@ public class Sos extends AppCompatActivity {
     private void uploadFiles(Uri[] fileUris) {
         for (Uri fileUri : fileUris) {
             if (fileUri != null) {
-                StorageReference fileRef = storageRef.child("reports/" + fileUri.getLastPathSegment());
+                String folderName = generateFolderName();
+                // 파일 이름 변경
+                String originalFileName = getFileName(fileUri);
+                String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss  ", Locale.getDefault()).format(new Date());
+                StorageReference folderRef = storageRef.child("reports/" + folderName);
+                StorageReference fileRef = folderRef.child(fileUri.getLastPathSegment());
+
                 UploadTask uploadTask = fileRef.putFile(fileUri);
                 uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -153,6 +158,14 @@ public class Sos extends AppCompatActivity {
             }
         }
     }
+
+    //파이어베이스 내부 저장소 폴더 추가 생성
+    private String generateFolderName() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        Date currentDate = new Date();
+        return dateFormat.format(currentDate);
+    }
+
 
     private String getFileName(Uri fileUri) {
         String fileName = null;
