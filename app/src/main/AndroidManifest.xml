@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Exam"
+        android:theme="@style/AppTheme.Custom"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
@@ -30,15 +30,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-       <activity
+        <activity
             android:name=".MapinfoActivity"
             android:theme="@style/AppTheme.Custom"/>
         <activity
-            android:name=".Dst"
-            android:theme="@style/AppTheme.Custom"/>
-        <activity
-            android:name=".Sos"
-            android:exported="true" />
+            android:name="com.map202306.test.Sos"
+            android:label="Sos Activity">
+        </activity>
     </application>
 
 </manifest>

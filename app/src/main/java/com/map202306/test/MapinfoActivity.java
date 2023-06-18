@@ -1,6 +1,9 @@
 package com.map202306.test;
 
 import com.map202306.test.R;
+import com.skt.Tmap.TMapData;
+import com.skt.Tmap.TMapPoint;
+import com.skt.Tmap.TMapPolyLine;
 
 import static java.lang.Math.round;
 
@@ -18,7 +21,13 @@ import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MapinfoActivity extends Activity {
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+public class MapinfoActivity extends AppCompatActivity {
+    //private OnRouteButtonClickListener buttonClickListener;
 
     private int width;
     private int height;
@@ -31,6 +40,9 @@ public class MapinfoActivity extends Activity {
     private TextView getMapInfoWoman;
     private TextView getMapInfoWoman2;
 
+    private double getMapInfoLatitude;
+    private double getMapInfoLongitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +50,22 @@ public class MapinfoActivity extends Activity {
 
         //돌아가기 버튼
         Button button = findViewById(R.id.button);
+        //길찾기
+        Button buttonRoute = findViewById(R.id.button_route);
+
+        // 길찾기 버튼 클릭 시
+        buttonRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 길찾기 버튼 클릭 여부
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("buttonClicked", true);
+                setResult(RESULT_OK, resultIntent);
+                finish(); // MapinfoActivity 종료
+            }
+        });
+
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
