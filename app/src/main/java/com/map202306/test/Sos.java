@@ -78,9 +78,63 @@ public class Sos extends AppCompatActivity {
                 Report report = new Report(reportId, title, content);
                 databaseRef.child(reportId).setValue(report);
                 Toast.makeText(Sos.this, "문제가 신고되었습니다.", Toast.LENGTH_SHORT).show();
+
+                Uri logFileUri = getLogFileUri();
+                if (logFileUri != null) {
+                    uploadLogFile(logFileUri, reportId);
+                } else {
+                    Toast.makeText(Sos.this, "로그 파일을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+
+                Toast.makeText(Sos.this, "문제가 신고되었습니다.", Toast.LENGTH_SHORT).show();
+                finish();
+
                 finish();
             }
         });
+    }
+
+    private void uploadLogFile(Uri logFileUri, String reportId) {
+        if (logFileUri != null) {
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            String fileName = timestamp + "log.txt";
+            StorageReference fileRef = storageRef.child("reports/" + fileName);
+
+            UploadTask uploadTask = fileRef.putFile(logFileUri);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri downloadUri) {
+                            String downloadUrl = downloadUri.toString();
+                            databaseRef.child(reportId).child("logFileUrl").setValue(downloadUrl);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(Sos.this, "로그 파일 다운로드 URL 가져오기 실패.", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    if (e instanceof StorageException) {
+                        StorageException storageException = (StorageException) e;
+                        int errorCode = storageException.getErrorCode();
+                        if (errorCode == StorageException.ERROR_QUOTA_EXCEEDED) {
+                            Toast.makeText(Sos.this, "Firebase Storage 일일 할당량을 초과했습니다.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    Toast.makeText(Sos.this, "로그 파일 업로드 실패.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+        }
     }
     private void openFilePicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -123,7 +177,7 @@ public class Sos extends AppCompatActivity {
                                 LogUtil.writeLog("", Sos.this); // 로그를 파일에 기록
                                 String downloadUrl = downloadUri.toString();
                                 String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-                                String fileName = timestamp + "\"yyyyMMdd_HHmmss\"log.txt";
+                                String fileName = timestamp + "log.txt";
                                 StorageReference fileRef = storageRef.child("reports/" + fileName);
                                 // 파일 URL을 데이터베이스에 저장하
                                 String reportId = databaseRef.push().getKey();
@@ -186,7 +240,7 @@ public class Sos extends AppCompatActivity {
     public static class LogUtil {
         private static final String TAG = "LogUtil";
         private static final String LOG_DIR = "logs";
-        private static final String LOG_FILE_NAME = "yyyyMMdd_HHmmss" + "log.txt";
+        private static final String LOG_FILE_NAME = "log.txt";
         public static void writeLog(String message, Context context) {
             File logFile = getLogFile(context);
 
