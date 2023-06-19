@@ -262,15 +262,6 @@
             android:layout_weight="2"
             android:text="돌아가기"
             tools:context=".MainActivity" />
-
-        <Button
-            android:id="@+id/button_route"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="길찾기"
-            tools:context=".MainActivity"
-            android:layout_marginStart="16dp" />
     </LinearLayout>
 
 </LinearLayout>

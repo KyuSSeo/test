@@ -51,19 +51,7 @@ public class MapinfoActivity extends AppCompatActivity {
         //돌아가기 버튼
         Button button = findViewById(R.id.button);
         //길찾기
-        Button buttonRoute = findViewById(R.id.button_route);
-
         // 길찾기 버튼 클릭 시
-        buttonRoute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 길찾기 버튼 클릭 여부
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("buttonClicked", true);
-                setResult(RESULT_OK, resultIntent);
-                finish(); // MapinfoActivity 종료
-            }
-        });
 
 
         button.setOnClickListener(new View.OnClickListener() {
